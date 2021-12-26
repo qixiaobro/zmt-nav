@@ -124,23 +124,9 @@ task('jsRelease', () => src(`${srcPath.js}/*.js`)
   .pipe(dest(`${destPath.js}`)));
 
 task('imgRelease', () => src(`${srcPath.assets}/*`)
-  .pipe(
-    imagemin([
-      imagemin.gifsicle({ interlaced: true }),
-      imagemin.mozjpeg({ quality: 75, progressive: true }),
-      imagemin.optipng({ optimizationLevel: 5 }),
-      imagemin.svgo({
-        plugins: [{ removeViewBox: true }, { cleanupIDs: false }],
-      }),
-    ]),
-  )
-  .pipe(rev())
-  .pipe(dest(`${destPath.assets}`))
-  .pipe(rev.manifest())
   .pipe(dest(`${destPath.assets}`)));
 
 task('delete', (cb) => {
-  fs.unlinkSync(`${destPath.assets}/rev-manifest.json`);
   fs.unlinkSync(`${destPath.js}/rev-manifest.json`);
   fs.unlinkSync(`${destPath.css}/rev-manifest.json`);
   return cb();
@@ -181,7 +167,6 @@ task(
     parallel('htmlRelease', 'cssRelease', 'jsRelease', 'imgRelease'),
     'replaceJs',
     'replaceCss',
-    'replaceImg',
     'delete',
   ),
 );
